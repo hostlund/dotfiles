@@ -105,10 +105,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export http_proxy=http://cloudpxgot1.srv.volvo.com:8080
-export https_proxy=http://cloudpxgot1.srv.volvo.com:8080
-export no_proxy=localhost,127.0.0.0/8,::1,.srv.volvo.com,.it.volvo.net,.vgthosting.net
-
 if [ -f ~/.dir_colors ]; then
   eval `dircolors ~/.dir_colors`
 fi

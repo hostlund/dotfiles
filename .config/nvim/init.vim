@@ -1,15 +1,35 @@
 " Specify a directory for plugins
 " - For Neovim: stdpath('data') . '/plugged'
 " - Avoid using standard Vim directory names like 'plugin'
+let g:python3_host_prog = '/usr/bin/python3'
+
 call plug#begin('~/.config/nvim/plugged')
 
 Plug 'morhetz/gruvbox'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"Plug 'neoclide/coc.nvim', {'branch': 'release'}
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
 Plug 'scrooloose/nerdTree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'majutsushi/tagbar'
+Plug 'gko/vim-coloresque'
+Plug 'itchyny/lightline.vim'
+Plug 'maximbaz/lightline-ale'
+Plug 'itchyny/vim-gitbranch'
+Plug 'dense-analysis/ale'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'ternjs/tern_for_vim', { 'do': 'npm install && npm install -g tern', 'for': ['javascript', 'javascript.jsx'] }
+Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
+" https://www.gregjs.com/vim/2016/neovim-deoplete-jspc-ultisnips-and-tern-a-config-for-kickass-autocompletion/
+Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
+Plug 'ervandew/supertab'
 
 " Initialize plugin system
 call plug#end()
@@ -18,6 +38,73 @@ call plug#end()
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+set number
+set noshowmode
+
+let g:deoplete#enable_at_startup = 1
+call deoplete#custom#source('omni', 'functions', {
+  \ 'javascript': ['tern#Complete', 'jspc#omni']
+\})
+
+set completeopt=longest,menuone,preview
+let g:deoplete#custom#sources = {}
+let g:deoplete#custom#sources['javascript.jsx'] = ['file', 'ternjs']
+
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_ignore_case = 1
+let g:deoplete#enable_camel_case = 1
+let g:deoplete#max_abbr_width = 0
+let g:deoplete#max_menu_width = 0
+let g:deoplete#sources#ternjs#types = 1
+
+let g:tern_request_timeout = 1
+let g:tern_request_timeout = 6000
+let g:tern#command = ['tern']
+let g:tern#arguments = ['--persistent']
+
+let g:ale_fix_on_save = 1
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'javascript': ['eslint'],
+\   'css': ['stylelint'],
+\   'scss': ['stylelint'],
+\}
+
+let g:ale_sign_error = '●'
+let g:ale_sign_warning = '.'
+
+" lightline
+
+
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ],
+      \             [ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ],
+      \           ],
+      \ },
+      \ 'component_function': {
+      \   'gitbranch': 'gitbranch#name',
+      \ },
+      \ 'component_expand' : {
+      \   'linter_checking': 'lightline#ale#checking',
+      \   'linter_warnings': 'lightline#ale#warnings',
+      \   'linter_errors': 'lightline#ale#errors',
+      \   'linter_ok': 'lightline#ale#ok',
+      \ },
+      \ 'component_type' : {
+      \   'linter_checking': 'middle',
+      \   'linter_warnings': 'warning',
+      \   'linter_errors': 'error',
+      \   'linter_ok': 'middle',
+      \ },
+      \ }
+"let g:lightline#ale#indicator_checking = "\uf110"
+"let g:lightline#ale#indicator_warnings = "\uf071"
+"let g:lightline#ale#indicator_errors = "\uf05e"
+"let g:lightline#ale#indicator_ok = "\uf00c"
+
 
 " Colors / Themes
 colorscheme gruvbox
@@ -29,6 +116,11 @@ nmap <silent> <A-Up> :wincmd k<CR>
 nmap <silent> <A-Down> :wincmd j<CR>
 nmap <silent> <A-Left> :wincmd h<CR>
 nmap <silent> <A-Right> :wincmd l<CR>
+nmap <silent> <C-e> <Plug>(ale_next_wrap)
+
+autocmd FileType javascript let g:SuperTabDefaultCompletionType = "<c-x><c-o>"
+let g:UltiSnipsExpandTrigger="<C-j>"
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " NERDTress File highlighting
 function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)

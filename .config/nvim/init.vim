@@ -16,6 +16,7 @@ else
 endif
 Plug 'scrooloose/nerdTree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'ryanoasis/vim-devicons'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'majutsushi/tagbar'
@@ -30,6 +31,19 @@ Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
 " https://www.gregjs.com/vim/2016/neovim-deoplete-jspc-ultisnips-and-tern-a-config-for-kickass-autocompletion/
 Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
 Plug 'ervandew/supertab'
+" Plug 'leafgarland/typescript-vim'
+Plug 'jparise/vim-graphql'
+" Plug 'othree/html5.vim'
+Plug 'skywind3000/asyncrun.vim'
+Plug 'prabirshrestha/async.vim'
+Plug 'janko/vim-test'
+Plug 'tpope/vim-fugitive'
+Plug 'junegunn/gv.vim'
+Plug 'pechorin/any-jump.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'ryanolsonx/vim-lsp-python'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'sheerun/vim-polyglot'
 
 " Initialize plugin system
 call plug#end()
@@ -38,8 +52,10 @@ call plug#end()
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+syntax on
 set number
 set noshowmode
+set tabstop=2 shiftwidth=2 expandtab
 
 let g:deoplete#enable_at_startup = 1
 call deoplete#custom#source('omni', 'functions', {
@@ -68,10 +84,15 @@ let g:ale_fixers = {
 \   'javascript': ['eslint'],
 \   'css': ['stylelint'],
 \   'scss': ['stylelint'],
+\   'python': ['yapf']
 \}
 
 let g:ale_sign_error = '●'
 let g:ale_sign_warning = '.'
+
+let test#strategy = "asyncrun_background_term"
+
+let g:lsp_preview_float = 1
 
 " lightline
 
@@ -121,6 +142,18 @@ nmap <silent> <C-e> <Plug>(ale_next_wrap)
 autocmd FileType javascript let g:SuperTabDefaultCompletionType = "<c-x><c-o>"
 let g:UltiSnipsExpandTrigger="<C-j>"
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+
+" Normal mode: Jump to definition under cursore
+nnoremap <leader>s :AnyJump<CR>
+nnoremap <C-j> :AnyJump<CR>
+" Visual mode: jump to selected text in visual mode
+" xnoremap <leader>j :AnyJumpVisual<CR>
+" Normal mode: open previous opened file (after jump)
+nnoremap <leader>ab :AnyJumpBack<CR>
+" Normal mode: open last closed search window again
+nnoremap <leader>al :AnyJumpLastResults<CR>
+
+nnoremap <C-i> :IndentGuidesToggle<CR>
 
 " NERDTress File highlighting
 function! NERDTreeHighlightFile(extension, fg, bg, guifg, guibg)
